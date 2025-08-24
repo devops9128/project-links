@@ -302,10 +302,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Sidebar Stats */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* Completion Rate */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Progress</h3>
+          <div className="bg-white rounded-lg shadow-sm p-5">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">Progress</h3>
             <div className="text-center">
               <div className="relative inline-flex items-center justify-center w-24 h-24">
                 <svg className="w-24 h-24 transform -rotate-90">
@@ -342,8 +342,8 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Categories Overview */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-lg shadow-sm p-5">
+            <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-medium text-gray-900">Categories</h3>
               <Link
                 to="/categories"
@@ -380,8 +380,8 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+          <div className="bg-white rounded-lg shadow-sm p-5">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">Quick Actions</h3>
             <div className="space-y-3">
               <Link
                 to="/tasks/new"

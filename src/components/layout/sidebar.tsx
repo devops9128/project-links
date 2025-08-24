@@ -42,9 +42,10 @@ import { cn } from '@/lib/utils';
 interface SidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
+  hideHeader?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose, hideHeader = false }) => {
   const location = useLocation();
   const { user } = useAuthStore();
   const { 
@@ -153,10 +154,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex flex-col h-full">
-          {/* Sidebar Header */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Navigation</h2>
-          </div>
+
 
           {/* Sidebar Content */}
           <div className="flex-1 flex flex-col overflow-y-auto">
@@ -178,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                       )}
                     >
                       <Icon className={cn(
-                        "mr-3 h-5 w-5 flex-shrink-0",
+                        "mr-2.5 h-5 w-5 flex-shrink-0",
                         item.current ? "text-blue-500" : "text-gray-400 group-hover:text-gray-500"
                       )} />
                       {item.name}
@@ -198,8 +196,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               </div>
             </nav>
 
+            {/* Divider */}
+            <div className="px-4 mt-6">
+              <div className="border-t border-gray-200"></div>
+            </div>
+
             {/* Quick Actions */}
-            <div className="px-4 mt-8">
+            <div className="px-4 mt-6">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 Quick Actions
               </h3>
@@ -209,14 +212,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                   onClick={onClose}
                   className="flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-2.5 h-4 w-4" />
                   New Task
                 </Link>
               </div>
             </div>
 
+            {/* Divider */}
+            <div className="px-4 mt-6">
+              <div className="border-t border-gray-200"></div>
+            </div>
+
             {/* Task Status Overview */}
-            <div className="px-4 mt-8">
+            <div className="px-4 mt-6">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 Task Status
               </h3>
@@ -231,7 +239,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                       className="flex items-center px-3 py-2 text-sm rounded-lg hover:bg-gray-50 transition-colors group"
                     >
                       <div className={cn(
-                        "flex items-center justify-center w-6 h-6 rounded mr-3",
+                        "flex items-center justify-center w-6 h-6 rounded mr-2.5",
                         item.bgColor
                       )}>
                         <Icon className={cn("h-3 w-3", item.color)} />
@@ -248,8 +256,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               </div>
             </div>
 
+            {/* Divider */}
+            <div className="px-4 mt-6">
+              <div className="border-t border-gray-200"></div>
+            </div>
+
             {/* Categories */}
-            <div className="px-4 mt-8">
+            <div className="px-4 mt-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Categories
@@ -276,7 +289,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                       className="flex items-center px-3 py-2 text-sm rounded-lg hover:bg-gray-50 transition-colors group"
                     >
                       <div 
-                        className="w-3 h-3 rounded-full mr-3 flex-shrink-0"
+                        className="w-3 h-3 rounded-full mr-2.5 flex-shrink-0"
                         style={{ backgroundColor: category.color }}
                       />
                       <span className="text-gray-700 group-hover:text-gray-900 flex-1 truncate">
@@ -291,15 +304,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                     onClick={onClose}
                     className="flex items-center px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
                   >
-                    <Tag className="mr-2 h-4 w-4" />
+                    <Tag className="mr-2.5 h-4 w-4" />
                     View all categories
                   </Link>
                 )}
               </div>
             </div>
 
+            {/* Divider */}
+            <div className="px-4 mt-6">
+              <div className="border-t border-gray-200"></div>
+            </div>
+
             {/* Completion Rate */}
-            <div className="px-4 mt-8 mb-6">
+            <div className="px-4 mt-6 mb-6">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 Progress
               </h3>

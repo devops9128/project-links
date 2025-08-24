@@ -56,7 +56,7 @@ export const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) =
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -67,23 +67,30 @@ export const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) =
         </div>
       )}
 
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Main content */}
-      <div className="lg:pl-64 flex flex-col flex-1">
-        {/* Header */}
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-
-        {/* Page content */}
-        <main className="flex-1">
-          <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              {children || <Outlet />}
-            </div>
+      {/* Top Header Container - Contains both Sidebar header and Main header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex h-16">
+          {/* Sidebar Header Section - Hidden on mobile */}
+          <div className="hidden lg:flex w-64 items-center justify-between px-4 border-r border-gray-200 bg-white">
+            <h2 className="text-lg font-semibold text-gray-900">Navigation</h2>
           </div>
-        </main>
+          
+          {/* Main Header Section */}
+          <div className="flex-1">
+            <Header onMenuClick={() => setSidebarOpen(true)}>
+              {children}
+            </Header>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Desktop Sidebar - Fixed positioning */}
+      <div className="hidden lg:block fixed top-16 left-0 bottom-0 w-64 bg-white shadow-lg border-r border-gray-200 overflow-y-auto z-30">
+        <Sidebar isOpen={true} onClose={() => setSidebarOpen(false)} hideHeader={true} />
+      </div>
+
+      {/* Mobile Sidebar */}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} hideHeader={false} />
+    </>
   );
 };
