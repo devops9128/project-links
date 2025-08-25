@@ -23,7 +23,7 @@
  * - Follows design system from product requirements
  */
 
-import React, { useState, memo } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   Home,
@@ -42,7 +42,7 @@ interface HeaderProps {
   children?: React.ReactNode;
 }
 
-const HeaderComponent: React.FC<HeaderProps> = ({ onMenuClick, children }) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick, children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuthStore();
@@ -246,12 +246,10 @@ const HeaderComponent: React.FC<HeaderProps> = ({ onMenuClick, children }) => {
 
       {/* Main Content Area - Positioned below header container */}
       <div className="min-h-screen bg-gray-50 pt-8 pb-8 flex flex-col">
-        <div className="flex-1 w-full max-w-none mx-auto px-6 sm:px-8 lg:px-12 xl:px-16">
-          <div className="min-h-full flex flex-col justify-center items-center gap-8 py-4 px-2">
-            <div className="w-full max-w-6xl flex flex-col items-stretch space-y-6">
+        <div className="flex-1 w-full max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-full">
+            <div className="w-full max-w-full flex flex-col flex-1 items-stretch justify-start space-y-4">
               {children || <Outlet />}
             </div>
-          </div>
         </div>
       </div>
 
@@ -283,17 +281,5 @@ const HeaderComponent: React.FC<HeaderProps> = ({ onMenuClick, children }) => {
     </header>
   );
 };
-
-// Memoized Header component to prevent unnecessary re-renders
-const Header = memo(HeaderComponent, (prevProps, nextProps) => {
-  // Custom comparison function for memo
-  // Only re-render if props actually changed
-  return (
-    prevProps.onMenuClick === nextProps.onMenuClick &&
-    prevProps.children === nextProps.children
-  );
-});
-
-Header.displayName = 'Header';
 
 export { Header };
