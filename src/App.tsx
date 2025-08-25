@@ -22,34 +22,108 @@
  * - Follows the route definitions from technical architecture
  */
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // Layout Components
 import { Layout } from '@/components/layout';
 
-// Page Components
-import Home from '@/pages/Home';
-import { Login, Register } from '@/pages/auth';
-import { TaskList, TaskForm, TaskDetail } from '@/pages/tasks';
-import { Profile } from '@/pages/profile';
+// Lazy-loaded Page Components
+const Home = React.lazy(() => import('@/pages/Home'));
+const Login = React.lazy(() => import('@/pages/auth').then(module => ({ default: module.Login })));
+const Register = React.lazy(() => import('@/pages/auth').then(module => ({ default: module.Register })));
+const TaskList = React.lazy(() => import('@/pages/tasks').then(module => ({ default: module.TaskList })));
+const TaskForm = React.lazy(() => import('@/pages/tasks').then(module => ({ default: module.TaskForm })));
+const TaskDetail = React.lazy(() => import('@/pages/tasks').then(module => ({ default: module.TaskDetail })));
+const Profile = React.lazy(() => import('@/pages/profile').then(module => ({ default: module.Profile })));
 
 // Store
 import { useAuthStore } from '@/stores';
 
-// Create a client for React Query
+// Create a client for React Query with optimized configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      cacheTime: 1000 * 60 * 10, // 10 minutes
-      retry: 1,
+      // Cache configuration
+      staleTime: 1000 * 60 * 5, // 5 minutes - data considered fresh
+      cacheTime: 1000 * 60 * 30, // 30 minutes - keep in cache
+      
+      // Retry configuration
+      retry: (failureCount, error: any) => {
+        // Don't retry on 4xx errors (client errors)
+        if (error?.status >= 400 && error?.status < 500) {
+          return false;
+        }
+        // Retry up to 3 times for other errors
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      
+      // Performance optimizations
       refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchOnMount: true,
+      
+      // Network mode configuration
+      networkMode: 'online',
+      
+      // Error handling
+      useErrorBoundary: false,
+      
+      // Suspense configuration
+      suspense: false,
+    },
+    mutations: {
+      // Retry configuration for mutations
+      retry: (failureCount, error: any) => {
+        // Don't retry mutations on client errors
+        if (error?.status >= 400 && error?.status < 500) {
+          return false;
+        }
+        // Retry up to 2 times for server errors
+        return failureCount < 2;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+      
+      // Error handling
+      useErrorBoundary: false,
+      
+      // Network mode
+      networkMode: 'online',
     },
   },
-});
+  
+  // Query cache configuration
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      // Global error handling for queries
+      console.error('Query error:', error, 'Query key:', query.queryKey);
+    },
+  }),
+  
+  // Mutation cache configuration
+  mutationCache: new MutationCache({
+    onError: (error, variables, context, mutation) => {
+      // Global error handling for mutations
+      console.error('Mutation error:', error, 'Variables:', variables);
+    },
+  }),
+ });
+
+/**
+ * Loading Component
+ * Displays a loading spinner while lazy components are being loaded
+ */
+const LoadingSpinner: React.FC = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
 
 /**
  * Protected Route Component
@@ -58,7 +132,9 @@ const queryClient = new QueryClient({
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Layout>
-      {children}
+      <Suspense fallback={<LoadingSpinner />}>
+        {children}
+      </Suspense>
     </Layout>
   );
 };
@@ -73,14 +149,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Show loading state while checking authentication
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   // Redirect to home if already authenticated
@@ -88,7 +157,11 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      {children}
+    </Suspense>
+  );
 };
 
 function App() {

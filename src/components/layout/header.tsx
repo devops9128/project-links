@@ -23,7 +23,7 @@
  * - Follows design system from product requirements
  */
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   Home,
@@ -42,7 +42,7 @@ interface HeaderProps {
   children?: React.ReactNode;
 }
 
-const Header: React.FC<HeaderProps> = ({ onMenuClick, children }) => {
+const HeaderComponent: React.FC<HeaderProps> = ({ onMenuClick, children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuthStore();
@@ -283,5 +283,17 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, children }) => {
     </header>
   );
 };
+
+// Memoized Header component to prevent unnecessary re-renders
+const Header = memo(HeaderComponent, (prevProps, nextProps) => {
+  // Custom comparison function for memo
+  // Only re-render if props actually changed
+  return (
+    prevProps.onMenuClick === nextProps.onMenuClick &&
+    prevProps.children === nextProps.children
+  );
+});
+
+Header.displayName = 'Header';
 
 export { Header };

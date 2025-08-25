@@ -27,6 +27,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
 import { useAuthStore } from '@/stores';
+import { initializePerformanceOptimizations } from '@/utils/resource-preloader';
 
 // Initialize authentication state
 const initializeAuth = async () => {
@@ -37,8 +38,17 @@ const initializeAuth = async () => {
   }
 };
 
-// Initialize auth before rendering
-initializeAuth();
+// Initialize performance optimizations
+const initializeApp = async () => {
+  // Initialize authentication
+  await initializeAuth();
+  
+  // Initialize performance optimizations
+  initializePerformanceOptimizations();
+};
+
+// Initialize app before rendering
+initializeApp();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

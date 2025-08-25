@@ -23,20 +23,20 @@
  * - Integrates with authentication store
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { Header } from './header';
 import { Sidebar } from './sidebar';
 import { useAuthStore } from '@/stores';
 
-export const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+const LayoutComponent: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, isLoading, initialize } = useAuthStore();
 
   // Initialize authentication on component mount
   useEffect(() => {
     initialize();
-  }, [initialize]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -94,3 +94,11 @@ export const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) =
     </>
   );
 };
+
+// Memoized Layout component to prevent unnecessary re-renders
+export const Layout = memo(LayoutComponent, (prevProps, nextProps) => {
+  // Only re-render if children prop changed
+  return prevProps.children === nextProps.children;
+});
+
+Layout.displayName = 'Layout';

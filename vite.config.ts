@@ -24,6 +24,61 @@ export default defineConfig({
     }), 
     tsconfigPaths(),
   ],
+  
+  // Build optimization configuration
+  build: {
+    // Enable source maps for better debugging
+    sourcemap: false,
+    
+    // Optimize chunk splitting
+    rollupOptions: {
+      output: {
+        // Manual chunk splitting for better caching
+        manualChunks: {
+          // Vendor chunks
+          'react-vendor': ['react', 'react-dom'],
+          'router-vendor': ['react-router-dom'],
+          'query-vendor': ['@tanstack/react-query'],
+          'ui-vendor': ['lucide-react', 'clsx', 'tailwind-merge'],
+          'supabase-vendor': ['@supabase/supabase-js'],
+          'store-vendor': ['zustand'],
+        },
+        
+        // Optimize chunk and asset naming
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+      },
+    },
+    
+    // Optimize bundle size
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    
+    // Set chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+    
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+  },
+  
+  // Performance optimizations
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@tanstack/react-query',
+      '@supabase/supabase-js',
+      'zustand',
+      'lucide-react',
+    ],
+  },
   server: {
     proxy: {
       '/api': {
